@@ -1,10 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
 function App() {
   const [count, setCount] = useState(0);
+
+  //state to store zipcodes
+  const [zipcode, setZipcode] = useState("02116");
+  //state to store taxData response
+  const [taxData, setTaxData] = useState([] as any);
+
+  //useState to get data
+  useEffect(() => {
+    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${zipcode}`;
+
+    const options = {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
+        "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
+      },
+    };
+
+    fetch(taxAPIUrl, options)
+      .then((response) => response.json())
+      // .then((response) => console.log("Tax response", response))
+      .then((response) => [response])
+      .then((response) => setTaxData(response))
+      .catch((err) => console.error(err));
+  }, [zipcode]);
+
+  console.log("Tax Data", taxData);
 
   return (
     <div className="App">
