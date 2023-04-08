@@ -3,6 +3,9 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
+const OPENCAGE_API_KEY = import.meta.env.OPENCAGE_API_KEY;
+const TAX_API_KEY = import.meta.env.TAX_API_KEY;
+
 function App() {
   // experiment
   const [openCageData, setOpenCageData] = useState(null);
@@ -23,13 +26,6 @@ function App() {
     fetch(geoLocationURL)
       .then((response) => response.json())
       .then((response) => setOpenCageData(response))
-      .then((response) => setZipcode(response[0].results.components.postcode))
-      .then((response) =>
-        console.log(
-          "geoLocation postcodeeeeeeeee",
-          response.results[0].components.postcode
-        )
-      )
       .catch((err) => console.error("ERRORRRR", err));
 
     const taxAPIOptions = {
@@ -71,7 +67,11 @@ function App() {
   console.log("Tax Data", taxData);
   console.log("Coordinates", coordinates);
   console.log("OpenCage Data", openCageData);
-  console.log("ZipCode", zipcode);
+  console.log("Entered ZipCode", zipcode);
+
+  const handleZipChange = (e: any) => {
+    setZipcode(e.target.value);
+  };
 
   return (
     <div className="App">
@@ -83,8 +83,8 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
 
+      <h1>Vite + React</h1>
       <div className="read-the-docs">
         <p> Your zipcode is {openCageData.results[0].components.postcode}</p>
         <p>State: {openCageData.results[0].components.state} </p>
@@ -101,6 +101,7 @@ function App() {
           's estimated county rate is: &nbsp;
           {taxData[0].estimated_county_rate && taxData[0].estimated_county_rate}
         </p>
+
         <p>
           Estimated special rate:{" "}
           {taxData[0].estimated_special_rate &&
@@ -108,6 +109,12 @@ function App() {
         </p>
         <p>State Rate: {taxData[0].state_rate}</p>
       </div>
+      <br />
+      <input
+        type="text"
+        placeholder="Enter ZipCode"
+        onChange={handleZipChange}
+      />
     </div>
   );
 }
