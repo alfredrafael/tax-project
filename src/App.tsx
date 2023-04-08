@@ -8,14 +8,14 @@ const TAX_API_KEY = import.meta.env.TAX_API_KEY;
 
 function App() {
   // experiment
-  const [openCageData, setOpenCageData] = useState(null);
+  const [openCageData, setOpenCageData] = useState([] as any);
   //state to store zipcodes
   const [zipcode, setZipcode] = useState([] as any);
   //state to store taxData response
   const [taxData, setTaxData] = useState([] as any);
   // state to store lat and long
-  const [coordinates, setCoordinates] = useState({ lat: null, long: null });
-  const [error, setError] = useState(null);
+  const [coordinates, setCoordinates] = useState({ lat: "", long: "" });
+  const [error, setError] = useState("");
 
   //useEffect to get datum
   useEffect(() => {
@@ -49,7 +49,7 @@ function App() {
         }
       );
     } else {
-      setError("Geolocation is not supported by this browser.");
+      setError("Geolocation is not supported by this browser");
     }
 
     const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${
