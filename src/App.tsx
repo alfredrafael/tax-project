@@ -20,14 +20,16 @@ function App() {
   //useEffect to get datum
   useEffect(() => {
     // const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=0fac6e3a1d15404b80b87bcb830520c7`;
-    const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=a0061d66ca1547e28991343c9f2db9dc`;
-
+    // const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=a0061d66ca1547e28991343c9f2db9dc`;
     // fetch openCageData
-    fetch(geoLocationURL)
-      .then((response) => response.json())
-      .then((response) => setOpenCageData(response))
-      .catch((err) => console.error("ERRORRRR", err));
+    // fetch(geoLocationURL)
+    //   .then((response) => response.json())
+    //   .then((response) => setOpenCageData(response))
+    //   .catch((err) => console.error("ERRORRRR", err));
 
+    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/75082`;
+
+    // taxAPI headers
     const taxAPIOptions = {
       method: "GET",
       headers: {
@@ -36,42 +38,38 @@ function App() {
       },
     };
 
-    // get coordinates
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          setCoordinates({ lat: latitude, long: longitude });
-        },
-        (error: any) => {
-          setError(error.message);
-        }
-      );
-    } else {
-      setError("Geolocation is not supported by this browser");
-    }
-
-    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${
-      !openCageData ? "02115" : openCageData.results[0].components.postcode
-    }`;
-
-    // fetch taxData
+    //    fetch taxData
     fetch(taxAPIUrl, taxAPIOptions)
       .then((response) => response.json())
       .then((response) => [response])
       .then((response) => setTaxData(response))
       .catch((err) => console.error(err));
-  }, [zipcode]);
+
+    // get coordinates
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //       const latitude = position.coords.latitude;
+    //       const longitude = position.coords.longitude;
+    //       setCoordinates({ lat: latitude, long: longitude });
+    //     },
+    //     (error: any) => {
+    //       setError(error.message);
+    //     }
+    //   );
+    // } else {
+    //   setError("Geolocation is not supported by this browser");
+    // }
+  }, []);
 
   console.log("Tax Data", taxData);
-  console.log("Coordinates", coordinates);
-  console.log("OpenCage Data", openCageData);
-  console.log("Entered ZipCode", zipcode);
+  // console.log("Coordinates", coordinates);
+  // console.log("OpenCage Data", openCageData);
+  // console.log("Entered ZipCode", zipcode);
 
-  const handleZipChange = (e: any) => {
-    setZipcode(e.target.value);
-  };
+  // const handleZipChange = (e: any) => {
+  //   setZipcode(e.target.value);
+  // };
 
   return (
     <div className="App">
@@ -85,8 +83,14 @@ function App() {
       </div>
 
       <h1>Vite + React</h1>
-      <div className="read-the-docs">
-        <p> Your zipcode is {openCageData.results[0].components.postcode}</p>
+      {/* <div className="read-the-docs">
+        <p>
+          {" "}
+          Your zipcode is{" "}
+          {openCageData.results[0].components.postcode
+            ? openCageData.results[0].components.postcode
+            : ""}
+        </p>
         <p>State: {openCageData.results[0].components.state} </p>
         <p>Estimated city rate: {taxData[0].estimated_city_rate}</p>
         <p>
@@ -114,7 +118,7 @@ function App() {
         type="text"
         placeholder="Enter ZipCode"
         onChange={handleZipChange}
-      />
+      /> */}
     </div>
   );
 }
