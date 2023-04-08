@@ -4,8 +4,10 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 
 function App() {
+  // experiment
+  const [openCageData, setOpenCageData] = useState(null);
   //state to store zipcodes
-  const [zipcode, setZipcode] = useState(null);
+  const [zipcode, setZipcode] = useState([] as any);
   //state to store taxData response
   const [taxData, setTaxData] = useState([] as any);
   // state to store lat and long
@@ -14,9 +16,21 @@ function App() {
 
   //useEffect to get datum
   useEffect(() => {
-    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${zipcode}`;
     // const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=0fac6e3a1d15404b80b87bcb830520c7`;
     const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=a0061d66ca1547e28991343c9f2db9dc`;
+
+    // fetch openCageData
+    fetch(geoLocationURL)
+      .then((response) => response.json())
+      .then((response) => setOpenCageData(response))
+      .then((response) => setZipcode(response[0].results.components.postcode))
+      .then((response) =>
+        console.log(
+          "geoLocation postcodeeeeeeeee",
+          response.results[0].components.postcode
+        )
+      )
+      .catch((err) => console.error("ERRORRRR", err));
 
     const taxAPIOptions = {
       method: "GET",
@@ -41,13 +55,10 @@ function App() {
     } else {
       setError("Geolocation is not supported by this browser.");
     }
-    // fetch zipCode
-    fetch(geoLocationURL)
-      .then((response) => response.json())
-      .then((response) => console.log(response))
-      .then((response) => setZipcode(response.results[0].components.postcode))
-      // .then((response) => console.log(response.results[0].components.postcode))
-      .catch((err) => console.error("ERRORRRR", err));
+
+    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${
+      !openCageData ? "02115" : openCageData.results[0].components.postcode
+    }`;
 
     // fetch taxData
     fetch(taxAPIUrl, taxAPIOptions)
@@ -55,16 +66,16 @@ function App() {
       .then((response) => [response])
       .then((response) => setTaxData(response))
       .catch((err) => console.error(err));
-  }, []);
+  }, [zipcode]);
+
+  console.log("Tax Data", taxData);
+  console.log("Coordinates", coordinates);
+  console.log("OpenCage Data", openCageData);
+  console.log("ZipCode", zipcode);
 
   return (
     <div className="App">
-      <div className="min-h-screen flex justify-center items-center">
-        <h1 className="text-3xl font-bold text-blue-600">
-          Install & Setup Vite + React + Typescript + Tailwind CSS 3!
-        </h1>
-      </div>
-      <div>
+      <div className="flex justify-between">
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -73,15 +84,30 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div className="card">
-        <button>Your zipcode is {!zipcode ? "loading" : zipcode}</button>
+
+      <div className="read-the-docs">
+        <p> Your zipcode is {openCageData.results[0].components.postcode}</p>
+        <p>State: {openCageData.results[0].components.state} </p>
+        <p>Estimated city rate: {taxData[0].estimated_city_rate}</p>
         <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+          Estimated combined rate:{" "}
+          {taxData[0].estimated_combined_rate &&
+            taxData[0].estimated_combined_rate}
         </p>
+        <p>
+          {openCageData.results[0].components.county === null
+            ? ""
+            : openCageData.results[0].components.county}
+          's estimated county rate is: &nbsp;
+          {taxData[0].estimated_county_rate && taxData[0].estimated_county_rate}
+        </p>
+        <p>
+          Estimated special rate:{" "}
+          {taxData[0].estimated_special_rate &&
+            taxData[0].estimated_special_rate}
+        </p>
+        <p>State Rate: {taxData[0].state_rate}</p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   );
 }
