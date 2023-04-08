@@ -14,7 +14,7 @@ function App() {
   //state to store taxData response
   const [taxData, setTaxData] = useState([] as any);
   // state to store lat and long
-  const [coordinates, setCoordinates] = useState({ lat: "", long: "" });
+  const [coordinates, setCoordinates] = useState({ lat: "", long: "" } as any);
   const [error, setError] = useState("");
 
   //useEffect to get datum
