@@ -5,18 +5,18 @@ import "./App.css";
 
 function App() {
   //state to store zipcodes
-  const [zipcode, setZipcode] = useState("02115");
+  const [zipcode, setZipcode] = useState(null);
   //state to store taxData response
   const [taxData, setTaxData] = useState([] as any);
   // state to store lat and long
-
   const [coordinates, setCoordinates] = useState({ lat: null, long: null });
   const [error, setError] = useState(null);
 
   //useEffect to get datum
   useEffect(() => {
     const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${zipcode}`;
-    const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=0fac6e3a1d15404b80b87bcb830520c7`;
+    // const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=0fac6e3a1d15404b80b87bcb830520c7`;
+    const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=a0061d66ca1547e28991343c9f2db9dc`;
 
     const taxAPIOptions = {
       method: "GET",
@@ -26,17 +26,10 @@ function App() {
       },
     };
 
-    // fetch taxData
-    fetch(taxAPIUrl, taxAPIOptions)
-      .then((response) => response.json())
-      .then((response) => [response])
-      .then((response) => setTaxData(response))
-      .catch((err) => console.error(err));
     // get coordinates
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position);
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
           setCoordinates({ lat: latitude, long: longitude });
@@ -51,12 +44,18 @@ function App() {
     // fetch zipCode
     fetch(geoLocationURL)
       .then((response) => response.json())
+      .then((response) => console.log(response))
       .then((response) => setZipcode(response.results[0].components.postcode))
-      .then((response) => console.log(response.results[0].components.postcode))
+      // .then((response) => console.log(response.results[0].components.postcode))
       .catch((err) => console.error("ERRORRRR", err));
-  }, []);
 
-  // console.log(zipcode);
+    // fetch taxData
+    fetch(taxAPIUrl, taxAPIOptions)
+      .then((response) => response.json())
+      .then((response) => [response])
+      .then((response) => setTaxData(response))
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <div className="App">
