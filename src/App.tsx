@@ -117,7 +117,7 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite & React Tax Disclosure</h1>
+      <h1>ReactJS Tax Data</h1>
       {/* Your coordiantates: {useUserLocation()} */}
       {latitude && longitude && (
         <ReverseGeocode latitude={latitude} longitude={longitude} />
