@@ -67,7 +67,7 @@ function ReverseGeocode(props: any) {
 }
 
 function TaxData() {
-  const [taxData, setTaxData] = useState([]);
+  const [taxData, setTaxData] = useState<any>([]);
 
   useEffect(() => {
     const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${"02115"}`;
