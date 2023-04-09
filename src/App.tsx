@@ -11,8 +11,8 @@ const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 }
 
 function useUserLocation() {
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState<number>();
+  const [longitude, setLongitude] = useState<number>();
 
   useEffect(() => {
     const getUserLocation = () => {
