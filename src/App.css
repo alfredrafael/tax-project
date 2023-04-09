@@ -17,25 +17,7 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap");
 
-.ts-logo {
-  position: absolute;
-  background: #358ef1;
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
-}
-
-.ts-logo p {
-  width: 100%;
-  position: relative;
-  color: #fff;
-  font-family: "Noto Sans KR";
-  font-size: 120px;
-  top: -80px;
-  left: 50px;
-}
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
