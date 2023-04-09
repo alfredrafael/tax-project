@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+import axios from "axios";
 
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
@@ -40,7 +41,7 @@ function useUserLocation() {
 }
 
 function ReverseGeocode(props: any) {
-  const [zipcode, setZipcode] = useState();
+  const [zipcode, setZipcode] = useState<any>();
   const [taxData, setTaxData] = useState<any>([]);
 
   useEffect(() => {
@@ -55,55 +56,45 @@ function ReverseGeocode(props: any) {
             result.types.includes("postal_code")
         );
         setZipcode(result ? result.address_components[0].short_name : null);
-        console.log("Zipcode:", zipcode);
       })
       .catch((error) => console.error(error));
-
-    //  ------------------------------ //
-
-    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${zipcode}`;
-
-    // TaxAPI headers
-    const taxAPIOptions = {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Key": "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
-        "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
-      },
-    };
-
-    // Fetch taxData
-    fetch(taxAPIUrl, taxAPIOptions)
-      .then((response) => response.json())
-      .then((data: []) => {
-        console.log("TaxData: ", data);
-        setTaxData([data]);
-      })
-      .catch((err) => console.error(err));
   }, [props.latitude, props.longitude]);
 
+  useEffect(() => {
+    if (zipcode) {
+      const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${zipcode}`;
+
+      // TaxAPI headers
+      const taxAPIOptions = {
+        headers: {
+          "X-RapidAPI-Key":
+            "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
+          "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
+        },
+      };
+
+      // Fetch taxData
+      axios
+        .get(taxAPIUrl, taxAPIOptions)
+        .then((response) => {
+          setTaxData(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [zipcode]);
+
+  console.log(taxData.state);
   return (
     <div>
-      {zipcode ? <p>Your Zipcode: {zipcode}</p> : <p>Loading...</p>}{" "}
-      {taxData
-        ? taxData.map((item: any, i: any) => (
-            <>
-              <p>
-                {item.state !== null ? (
-                  <p>Your state: {item.state}</p>
-                ) : (
-                  "No state"
-                )}
-              </p>
-              <p>
-                {item.estimated_city_rate !== null ? (
-                  <p>Your Estimated City Rate: {item.estimated_city_rate}</p>
-                ) : (
-                  "No estimate"
-                )}
-              </p>
-              <p>
-                {item.estimated_combined_rate !== null ? (
+      {zipcode ? <p>Your Zipcode: {zipcode}</p> : <p></p>}{" "}
+      <p>Your state: {taxData.state}</p>
+      <p>Your Estimated City Rate: {taxData.estimated_city_rate}</p>
+      <p>Your Estimated Combined Rate: {taxData.estimated_combined_rate}</p>
+      {/*
+      
+              <
                   <p>
                     Your Estimated Combined Rate: {item.estimated_combined_rate}
                   </p>
@@ -131,7 +122,7 @@ function ReverseGeocode(props: any) {
               </p>
             </>
           ))
-        : "No tax data"}{" "}
+        : "No tax data"}{" "} */}
     </div>
   );
 }
