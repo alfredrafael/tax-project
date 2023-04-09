@@ -94,7 +94,9 @@ function TaxData() {
   return (
     // <div>{taxData ? <p>{JSON.stringify(taxData[0])}</p> : "No tax data"} </div>
     <div>
-      {taxData ? taxData.map((item, i) => <p>{item.state}</p>) : "No tax data"}{" "}
+      {taxData
+        ? taxData.map((item: any, i: any) => <p>{item.state}</p>)
+        : "No tax data"}{" "}
     </div>
   );
 }
