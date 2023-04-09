@@ -55,6 +55,7 @@ function ReverseGeocode(props: any) {
             result.types.includes("postal_code")
         );
         setZipcode(result ? result.address_components[0].short_name : null);
+        console.log("Zipcode:", zipcode);
       })
       .catch((error) => console.error(error));
 
