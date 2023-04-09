@@ -50,8 +50,9 @@ function ReverseGeocode(props: any) {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        const result = data.results.find((result) =>
-          result.types.includes("postal_code")
+        const result = data.results.find(
+          (result: { types: string | string[] }) =>
+            result.types.includes("postal_code")
         );
         setZipcode(result ? result.address_components[0].short_name : null);
       })
@@ -64,31 +65,38 @@ function ReverseGeocode(props: any) {
 {
   /* // Build Tax URL////////////////////////////////////////////////////////////////////// */
 }
-function TaxData() {
-  const [taxData, setTaxData] = useState(null);
-  useEffect(() => {
-    async function fetchTaxData() {
-      const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/75082`;
 
-      const options = {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key":
-            "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
-          "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
-        },
-      };
-      const response = await fetch(
-        "https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/75082",
-        options
-      );
-      const jsonResponse = await response.json();
-      setTaxData(jsonResponse);
-    }
-    fetchTaxData();
+function TaxData() {
+  const [taxData, setTaxData] = useState([]);
+
+  useEffect(() => {
+    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${"02115"}`;
+
+    // TaxAPI headers
+    const taxAPIOptions = {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
+        "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
+      },
+    };
+
+    // Fetch taxData
+    fetch(taxAPIUrl, taxAPIOptions)
+      .then((response) => response.json())
+      .then((data: []) => {
+        console.log("TaxData: ", data);
+        setTaxData([data]);
+      })
+      .catch((err) => console.error(err));
   }, []);
 
-  return <div>{taxData ? <p>{taxData}</p> : "No tax data"}</div>;
+  return (
+    // <div>{taxData ? <p>{JSON.stringify(taxData[0])}</p> : "No tax data"} </div>
+    <div>
+      {taxData ? taxData.map((item, i) => <p>{item.state}</p>) : "No tax data"}{" "}
+    </div>
+  );
 }
 
 {
@@ -113,7 +121,7 @@ function App() {
       {latitude && longitude && (
         <ReverseGeocode latitude={latitude} longitude={longitude} />
       )}
-      {/* <TaxData /> */}
+      <TaxData />
     </div>
   );
 }
