@@ -4,7 +4,6 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-// const TAX_API_KEY = import.meta.env.TAX_API_KEY;
 
 {
   /* // Get Coordinates ////////////////////////////////////////////////////////////////////// */
