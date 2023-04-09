@@ -41,7 +41,7 @@ function useUserLocation() {
 }
 
 function ReverseGeocode(props: any) {
-  const [zipcode, setZipcode] = useState(null);
+  const [zipcode, setZipcode] = useState();
   const [taxData, setTaxData] = useState<any>([]);
 
   useEffect(() => {
@@ -84,10 +84,52 @@ function ReverseGeocode(props: any) {
 
   return (
     <div>
-      {zipcode ? <p>Zipcode: {zipcode}</p> : <p>Loading...</p>}{" "}
+      {zipcode ? <p>Your Zipcode: {zipcode}</p> : <p>Loading...</p>}{" "}
       {taxData
         ? taxData.map((item: any, i: any) => (
-            <p>{item ? item.state : "No state"}</p>
+            <>
+              <p>
+                {item.state !== null ? (
+                  <p>Your state: {item.state}</p>
+                ) : (
+                  "No state"
+                )}
+              </p>
+              <p>
+                {item.estimated_city_rate !== null ? (
+                  <p>Your Estimated City Rate: {item.estimated_city_rate}</p>
+                ) : (
+                  "No estimate"
+                )}
+              </p>
+              <p>
+                {item.estimated_combined_rate !== null ? (
+                  <p>
+                    Your Estimated Combined Rate: {item.estimated_combined_rate}
+                  </p>
+                ) : (
+                  "No combined rate available"
+                )}
+              </p>
+              <p>
+                {item.estimated_county_rate !== null ? (
+                  <p>
+                    Your Estimated county rate: {item.estimated_county_rate}
+                  </p>
+                ) : (
+                  "No county rate available"
+                )}
+              </p>
+              <p>
+                {item.estimated_special_rate !== null ? (
+                  <p>
+                    Your Estimated county rate: {item.estimated_special_rate}
+                  </p>
+                ) : (
+                  "No county rate available"
+                )}
+              </p>
+            </>
           ))
         : "No tax data"}{" "}
     </div>
@@ -150,7 +192,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      {useUserLocation()}
+      Your coordiantates: {useUserLocation()}
       {latitude && longitude && (
         <ReverseGeocode latitude={latitude} longitude={longitude} />
       )}
