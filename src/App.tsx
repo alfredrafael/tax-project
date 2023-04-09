@@ -3,76 +3,103 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
-const OPENCAGE_API_KEY = import.meta.env.OPENCAGE_API_KEY;
-const TAX_API_KEY = import.meta.env.TAX_API_KEY;
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+// const TAX_API_KEY = import.meta.env.TAX_API_KEY;
 
-function App() {
-  // experiment
-  const [openCageData, setOpenCageData] = useState([] as any);
-  //state to store zipcodes
-  const [zipcode, setZipcode] = useState([] as any);
-  //state to store taxData response
-  const [taxData, setTaxData] = useState([] as any);
-  // state to store lat and long
-  const [coordinates, setCoordinates] = useState({ lat: "", long: "" } as any);
-  const [error, setError] = useState("");
+{
+  /* // Get Coordinates ////////////////////////////////////////////////////////////////////// */
+}
 
-  //useEffect to get datum
+function useUserLocation() {
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
   useEffect(() => {
-    // const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=0fac6e3a1d15404b80b87bcb830520c7`;
-    // const geoLocationURL = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates.lat},${coordinates.long}&key=a0061d66ca1547e28991343c9f2db9dc`;
-    // fetch openCageData
-    // fetch(geoLocationURL)
-    //   .then((response) => response.json())
-    //   .then((response) => setOpenCageData(response))
-    //   .catch((err) => console.error("ERRORRRR", err));
-
-    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/75082`;
-
-    // taxAPI headers
-    const taxAPIOptions = {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Key": "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
-        "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
-      },
+    const getUserLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
+          },
+          (error) => {
+            console.error(error);
+          }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
     };
 
-    //    fetch taxData
-    fetch(taxAPIUrl, taxAPIOptions)
-      .then((response) => response.json())
-      .then((response) => [response])
-      .then((response) => setTaxData(response))
-      .catch((err) => console.error(err));
-
-    // get coordinates
-    // if (navigator.geolocation) {
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       const latitude = position.coords.latitude;
-    //       const longitude = position.coords.longitude;
-    //       setCoordinates({ lat: latitude, long: longitude });
-    //     },
-    //     (error: any) => {
-    //       setError(error.message);
-    //     }
-    //   );
-    // } else {
-    //   setError("Geolocation is not supported by this browser");
-    // }
+    getUserLocation();
   }, []);
 
-  console.log("Tax Data", taxData);
-  // console.log("Coordinates", coordinates);
-  // console.log("OpenCage Data", openCageData);
-  // console.log("Entered ZipCode", zipcode);
+  return [latitude, longitude];
+}
+{
+  /* // Get Zip Code////////////////////////////////////////////////////////////////////// */
+}
 
-  // const handleZipChange = (e: any) => {
-  //   setZipcode(e.target.value);
-  // };
+function ReverseGeocode(props: any) {
+  const [zipcode, setZipcode] = useState(null);
+
+  useEffect(() => {
+    const { latitude, longitude } = props;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        const result = data.results.find((result) =>
+          result.types.includes("postal_code")
+        );
+        setZipcode(result ? result.address_components[0].short_name : null);
+      })
+      .catch((error) => console.error(error));
+  }, [props.latitude, props.longitude]);
+
+  return <div>{zipcode ? <p>Zipcode: {zipcode}</p> : <p>Loading...</p>}</div>;
+}
+
+{
+  /* // Build Tax URL////////////////////////////////////////////////////////////////////// */
+}
+function TaxData() {
+  const [taxData, setTaxData] = useState(null);
+  useEffect(() => {
+    async function fetchTaxData() {
+      const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/75082`;
+
+      const options = {
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key":
+            "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
+          "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
+        },
+      };
+      const response = await fetch(
+        "https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/75082",
+        options
+      );
+      const jsonResponse = await response.json();
+      setTaxData(jsonResponse);
+    }
+    fetchTaxData();
+  }, []);
+
+  return <div>{taxData ? <p>{taxData}</p> : "No tax data"}</div>;
+}
+
+{
+  /* // Display ////////////////////////////////////////////////////////////////////// */
+}
+
+function App() {
+  const [latitude, longitude] = useUserLocation();
 
   return (
-    <div className="App">
+    <div>
       <div className="flex justify-between">
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -81,44 +108,12 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-
       <h1>Vite + React</h1>
-      {/* <div className="read-the-docs">
-        <p>
-          {" "}
-          Your zipcode is{" "}
-          {openCageData.results[0].components.postcode
-            ? openCageData.results[0].components.postcode
-            : ""}
-        </p>
-        <p>State: {openCageData.results[0].components.state} </p>
-        <p>Estimated city rate: {taxData[0].estimated_city_rate}</p>
-        <p>
-          Estimated combined rate:{" "}
-          {taxData[0].estimated_combined_rate &&
-            taxData[0].estimated_combined_rate}
-        </p>
-        <p>
-          {openCageData.results[0].components.county === null
-            ? ""
-            : openCageData.results[0].components.county}
-          's estimated county rate is: &nbsp;
-          {taxData[0].estimated_county_rate && taxData[0].estimated_county_rate}
-        </p>
-
-        <p>
-          Estimated special rate:{" "}
-          {taxData[0].estimated_special_rate &&
-            taxData[0].estimated_special_rate}
-        </p>
-        <p>State Rate: {taxData[0].state_rate}</p>
-      </div>
-      <br />
-      <input
-        type="text"
-        placeholder="Enter ZipCode"
-        onChange={handleZipChange}
-      /> */}
+      {useUserLocation()}
+      {latitude && longitude && (
+        <ReverseGeocode latitude={latitude} longitude={longitude} />
+      )}
+      {/* <TaxData /> */}
     </div>
   );
 }
