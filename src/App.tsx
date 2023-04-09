@@ -85,85 +85,19 @@ function ReverseGeocode(props: any) {
     }
   }, [zipcode]);
 
-  console.log(taxData.state);
+  console.log(taxData);
+
   return (
     <div>
       {zipcode ? <p>Your Zipcode: {zipcode}</p> : <p></p>}{" "}
-      <p>Your state: {taxData.state}</p>
+      <p>Your State: {taxData.state}</p>
+      <p>Your State rate: {taxData.state_rate}</p>
       <p>Your Estimated City Rate: {taxData.estimated_city_rate}</p>
+      <p>Your Estimated County rate: {taxData.estimated_county_rate}</p>
       <p>Your Estimated Combined Rate: {taxData.estimated_combined_rate}</p>
-      {/*
-      
-              <
-                  <p>
-                    Your Estimated Combined Rate: {item.estimated_combined_rate}
-                  </p>
-                ) : (
-                  "No combined rate available"
-                )}
-              </p>
-              <p>
-                {item.estimated_county_rate !== null ? (
-                  <p>
-                    Your Estimated county rate: {item.estimated_county_rate}
-                  </p>
-                ) : (
-                  "No county rate available"
-                )}
-              </p>
-              <p>
-                {item.estimated_special_rate !== null ? (
-                  <p>
-                    Your Estimated county rate: {item.estimated_special_rate}
-                  </p>
-                ) : (
-                  "No county rate available"
-                )}
-              </p>
-            </>
-          ))
-        : "No tax data"}{" "} */}
     </div>
   );
 }
-
-{
-  /* // Build Tax URL////////////////////////////////////////////////////////////////////// */
-}
-
-// function TaxData() {
-//   const [taxData, setTaxData] = useState<any>([]);
-
-//   useEffect(() => {
-//     const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${"02115"}`;
-
-//     // TaxAPI headers
-//     const taxAPIOptions = {
-//       method: "GET",
-//       headers: {
-//         "X-RapidAPI-Key": "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
-//         "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
-//       },
-//     };
-
-//     // Fetch taxData
-//     fetch(taxAPIUrl, taxAPIOptions)
-//       .then((response) => response.json())
-//       .then((data: []) => {
-//         console.log("TaxData: ", data);
-//         setTaxData([data]);
-//       })
-//       .catch((err) => console.error(err));
-//   }, []);
-
-//   return (
-//     <div>
-//       {taxData
-//         ? taxData.map((item: any, i: any) => <p>{item.state}</p>)
-//         : "No tax data"}{" "}
-//     </div>
-//   );
-// }
 
 {
   /* // Display ////////////////////////////////////////////////////////////////////// */
@@ -183,7 +117,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      Your coordiantates: {useUserLocation()}
+      {/* Your coordiantates: {useUserLocation()} */}
       {latitude && longitude && (
         <ReverseGeocode latitude={latitude} longitude={longitude} />
       )}
