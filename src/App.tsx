@@ -6,6 +6,7 @@ import axios from "axios";
 
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const TAX_API_KEY = import.meta.env.VITE_TAX_API_KEY;
+const TAX_API_PROVIDER = import.meta.env.VITE_TAX_API_PROVIDER;
 
 /* // Get Coordinates ////////////////////////////////////////////////////////////////////// */
 
@@ -66,7 +67,7 @@ function ReverseGeocode(props: any) {
       const taxAPIOptions = {
         headers: {
           "X-RapidAPI-Key": `${TAX_API_KEY}`,
-          "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
+          "X-RapidAPI-Host": `${TAX_API_PROVIDER}`,
         },
       };
 
@@ -82,10 +83,10 @@ function ReverseGeocode(props: any) {
     }
   }, [zipcode]);
 
-  console.log(taxData);
+  // console.log(taxData);
 
   return (
-    <div>
+    <div className="text-left">
       {zipcode ? <p>Your zipcode: {zipcode}</p> : <p></p>}{" "}
       <p>Your State: {taxData.state}</p>
       <p>Your State rate: {taxData.state_rate}</p>
@@ -96,65 +97,68 @@ function ReverseGeocode(props: any) {
   );
 }
 
-// const ZipCodeInput = () => {
-//   const [inputValue, setInputValue] = useState<string>("");
-//   const [isValid, setIsValid] = useState<boolean>(true);
-//   const [taxData, setTaxData] = useState<any>([]);
+const TaxDataRequest = () => {
+  const [zipcode, setZipcode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [taxData, setTaxData] = useState();
 
-//   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     const newValue = event.target.value;
-//     setInputValue(newValue);
-//     // Check if the new value is a valid zip code
-//     const isValidZip = isValidZipCode(newValue);
-//     setIsValid(isValidZip);
-//   };
+  const isValidZipCode = (zipCode: string): boolean => {
+    // Regular expression for validating US zip codes
+    const zipCodeRegex = /^\d{5}(?:[-\s]\d{4})?$/;
+    return zipCodeRegex.test(zipCode);
+  };
 
-//   const handleClick = () => {
-//     if (isValid) {
-//       useEffect(() => {
-//         const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${inputValue}`;
+  const handleClick = async () => {
+    !isValidZipCode(zipcode) && alert("Please enter a valid zipcode");
 
-//         // TaxAPI headers
-//         const taxAPIOptions = {
-//           headers: {
-//             "X-RapidAPI-Key":
-//               "ccdfef5bcfmsh039706eb6485b4dp119607jsnaf780f8fff24",
-//             "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
-//           },
-//         };
+    setIsLoading(true);
 
-//         // Fetch taxData
-//         axios
-//           .get(taxAPIUrl, taxAPIOptions)
-//           .then((response) => {
-//             setTaxData(response.data);
-//           })
-//           .catch((error) => {
-//             console.error(error);
-//           });
-//       }, []);
+    const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${zipcode}`;
+    // TaxAPI headers
+    const taxAPIOptions = {
+      headers: {
+        "X-RapidAPI-Key": `${TAX_API_KEY}`,
+        "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
+      },
+    };
 
-//       return <p>hello</p>;
-//     } else {
-//       alert("is not valid");
-//     }
-//   };
+    // Fetch taxData
+    axios
+      .get(taxAPIUrl, taxAPIOptions)
+      .then((response) => {
+        setTaxData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    setIsLoading(false);
+    setZipcode("");
+  };
 
-//   return (
-//     <div>
-//       <input
-//         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline max-w-[50%]"
-//         placeholder="Enter zipcode here"
-//         type="text"
-//         value={inputValue}
-//         onChange={handleChange}
-//       />
-//       <button onClick={handleClick}>Get tax data</button>
-//       {!isValid && <div>Please enter a valid zip code.</div>}
-
-//     </div>
-//   );
-// };
+  return (
+    <div className="text-left">
+      <input
+        type="text"
+        id="zipcode"
+        placeholder="Enter zipcode here"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline max-w-[50%]"
+        value={zipcode}
+        onChange={(e) => setZipcode(e.target.value)}
+      />
+      <button onClick={handleClick}>Get tax rates</button>
+      {isLoading && <p>loading...</p>}
+      {taxData && (
+        <div className="text-left">
+          <p>State: {taxData.state}</p>
+          <p>State rate: {taxData.state_rate}</p>
+          <p>Estimated city rate: {taxData.estimated_city_rate}</p>
+          <p>Estimated county rate: {taxData.estimated_county_rate}</p>
+          <p>Estimated combined rate: {taxData.estimated_combined_rate}</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 {
   /* // Display ////////////////////////////////////////////////////////////////////// */
@@ -178,8 +182,10 @@ function App() {
       {latitude && longitude && (
         <ReverseGeocode latitude={latitude} longitude={longitude} />
       )}
-      Your coordiantates: {useUserLocation()}
-      <div>{/* <ZipCodeInput /> */}</div>
+      {/* Your coordiantates: {useUserLocation()} */}
+      <div>
+        <TaxDataRequest />
+      </div>
     </div>
   );
 }
