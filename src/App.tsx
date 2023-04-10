@@ -118,7 +118,7 @@ const TaxDataRequest = () => {
     const taxAPIOptions = {
       headers: {
         "X-RapidAPI-Key": `${TAX_API_KEY}`,
-        "X-RapidAPI-Host": "u-s-a-sales-taxes-per-zip-code.p.rapidapi.com",
+        "X-RapidAPI-Host": `${TAX_API_PROVIDER}`,
       },
     };
 
