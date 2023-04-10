@@ -89,9 +89,9 @@ function ReverseGeocode(props: any) {
       {zipcode ? <p>Your zipcode: {zipcode}</p> : <p></p>}{" "}
       <p>Your State: {taxData.state}</p>
       <p>Your State rate: {taxData.state_rate}</p>
-      <p>Your estimated city Rate: {taxData.estimated_city_rate}</p>
+      <p>Your estimated city rate: {taxData.estimated_city_rate}</p>
       <p>Your estimated county rate: {taxData.estimated_county_rate}</p>
-      <p>Your estimated combined Rate: {taxData.estimated_combined_rate}</p>
+      <p>Your estimated combined rate: {taxData.estimated_combined_rate}</p>
     </div>
   );
 }
