@@ -8,7 +8,16 @@ const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const TAX_API_KEY = import.meta.env.VITE_TAX_API_KEY;
 const TAX_API_PROVIDER = import.meta.env.VITE_TAX_API_PROVIDER;
 
-/* // Get Coordinates ////////////////////////////////////////////////////////////////////// */
+//tax data types
+interface TaxData {
+  state: string;
+  state_rate: string;
+  estimated_city_rate: number;
+  estimated_county_rate: number;
+  estimated_combined_rate: number;
+}
+
+/* // Get Coordinates Fn ///////////////////////////////////////////////////////////////// */
 
 function useUserLocation() {
   const [latitude, setLatitude] = useState<number>();
@@ -37,7 +46,7 @@ function useUserLocation() {
   return [latitude, longitude];
 }
 
-/* // Get Zip Code////////////////////////////////////////////////////////////////////// */
+/* // Get Zip Code Fn ////////////////////////////////////////////////////////////////// */
 
 function ReverseGeocode(props: any) {
   const [zipcode, setZipcode] = useState<any>();
@@ -62,6 +71,7 @@ function ReverseGeocode(props: any) {
     setIsLoading(false);
   }, [props.latitude, props.longitude]);
 
+  // use zipcode to make tax-api request
   useEffect(() => {
     if (zipcode) {
       const taxAPIUrl = `https://u-s-a-sales-taxes-per-zip-code.p.rapidapi.com/${zipcode}`;
@@ -74,7 +84,7 @@ function ReverseGeocode(props: any) {
         },
       };
 
-      // Fetch taxData
+      // make tax-api request
       axios
         .get(taxAPIUrl, taxAPIOptions)
         .then((response) => {
@@ -85,8 +95,6 @@ function ReverseGeocode(props: any) {
         });
     }
   }, [zipcode]);
-
-  // console.log(taxData);
 
   return (
     <div className="text-left">
@@ -108,13 +116,7 @@ function ReverseGeocode(props: any) {
   );
 }
 
-interface TaxData {
-  state: string;
-  state_rate: string;
-  estimated_city_rate: number;
-  estimated_county_rate: number;
-  estimated_combined_rate: number;
-}
+// TaxData api-request for when user request via zipcode
 
 const TaxDataRequest = () => {
   const [zipcode, setZipcode] = useState("");
@@ -186,7 +188,7 @@ const TaxDataRequest = () => {
 };
 
 {
-  /* // Display ////////////////////////////////////////////////////////////////////// */
+  /* // UI display ////////////////////////////////////////////////////////////////////// */
 }
 
 function App() {
