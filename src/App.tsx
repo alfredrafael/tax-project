@@ -107,6 +107,7 @@ interface TaxData {
 
 const TaxDataRequest = () => {
   const [zipcode, setZipcode] = useState("");
+  const [persistentZipcode, setPersistentZipcode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [taxData, setTaxData] = useState<TaxData | undefined>();
 
@@ -140,6 +141,7 @@ const TaxDataRequest = () => {
         console.error(error);
       });
     setIsLoading(false);
+    setPersistentZipcode(zipcode);
     setZipcode("");
   };
 
@@ -160,7 +162,7 @@ const TaxDataRequest = () => {
       {isLoading && <p>loading...</p>}
       {taxData && (
         <div className="text-left mt-4">
-          {/* <p>Zipcode: {zipcode}</p> */}
+          <p>Zipcode: {persistentZipcode}</p>
           <p>State: {taxData.state}</p>
           <p>State rate: {taxData.state_rate}</p>
           <p>Estimated city rate: {taxData.estimated_city_rate}</p>
