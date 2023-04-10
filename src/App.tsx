@@ -144,19 +144,23 @@ const TaxDataRequest = () => {
   };
 
   return (
-    <div className="text-left">
+    <div className="justify-left">
+      <button className="mb-4" onClick={handleClick}>
+        Get city tax rates per zipcode
+      </button>
+
       <input
         type="text"
         id="zipcode"
         placeholder="Enter zipcode here"
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline max-w-[50%]"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline max-w-[80%] md:max-w-[40%] md:m-4"
         value={zipcode}
         onChange={(e) => setZipcode(e.target.value)}
       />
-      <button onClick={handleClick}>Get tax rates</button>
       {isLoading && <p>loading...</p>}
       {taxData && (
-        <div className="text-left">
+        <div className="text-left mt-4">
+          {/* <p>Zipcode: {zipcode}</p> */}
           <p>State: {taxData.state}</p>
           <p>State rate: {taxData.state_rate}</p>
           <p>Estimated city rate: {taxData.estimated_city_rate}</p>
@@ -174,6 +178,22 @@ const TaxDataRequest = () => {
 
 function App() {
   const [latitude, longitude] = useUserLocation();
+  const [displayCurrent, setDisplayCurrent] = useState(false);
+
+  const handleDisplayClick = () => {
+    setDisplayCurrent(!displayCurrent);
+  };
+
+  function DisplayCurrentLocationTaxRates() {
+    return (
+      <div className="flex justify-center">
+        <button className="right" onClick={handleDisplayClick}>
+          {displayCurrent ? "Hide" : "Get"} tax data as per your current
+          location
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="">
@@ -187,11 +207,16 @@ function App() {
         </a>
       </div>
       <h1>ReactJS Tax Data</h1>
-      {latitude && longitude && (
-        <ReverseGeocode latitude={latitude} longitude={longitude} />
+      {displayCurrent && (
+        <div>
+          {latitude && longitude && (
+            <ReverseGeocode latitude={latitude} longitude={longitude} />
+          )}
+        </div>
       )}
-      {/* Your coordiantates: {useUserLocation()} */}
       <div>
+        <DisplayCurrentLocationTaxRates />
+        <br />
         <TaxDataRequest />
       </div>
     </div>
