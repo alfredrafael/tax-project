@@ -97,10 +97,18 @@ function ReverseGeocode(props: any) {
   );
 }
 
+interface TaxData {
+  state: string;
+  state_rate: string;
+  estimated_city_rate: number;
+  estimated_county_rate: number;
+  estimated_combined_rate: number;
+}
+
 const TaxDataRequest = () => {
   const [zipcode, setZipcode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [taxData, setTaxData] = useState();
+  const [taxData, setTaxData] = useState<TaxData | undefined>();
 
   const isValidZipCode = (zipCode: string): boolean => {
     // Regular expression for validating US zip codes
