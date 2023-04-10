@@ -42,8 +42,10 @@ function useUserLocation() {
 function ReverseGeocode(props: any) {
   const [zipcode, setZipcode] = useState<any>();
   const [taxData, setTaxData] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     const { latitude, longitude } = props;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`;
 
@@ -57,6 +59,7 @@ function ReverseGeocode(props: any) {
         setZipcode(result ? result.address_components[0].short_name : null);
       })
       .catch((error) => console.error(error));
+    setIsLoading(false);
   }, [props.latitude, props.longitude]);
 
   useEffect(() => {
@@ -87,12 +90,20 @@ function ReverseGeocode(props: any) {
 
   return (
     <div className="text-left">
-      {zipcode ? <p>Your zipcode: {zipcode}</p> : <p></p>}{" "}
-      <p>Your State: {taxData.state}</p>
-      <p>Your State rate: {taxData.state_rate}</p>
-      <p>Your estimated city rate: {taxData.estimated_city_rate}</p>
-      <p>Your estimated county rate: {taxData.estimated_county_rate}</p>
-      <p>Your estimated combined rate: {taxData.estimated_combined_rate}</p>
+      {zipcode && !isLoading ? (
+        <span>
+          <p>Your zipcode: {zipcode}</p>
+          <p>Your State: {taxData.state}</p>
+          <p>Your State rate: {taxData.state_rate}</p>
+          <p>Your estimated city rate: {taxData.estimated_city_rate}</p>
+          <p>Your estimated county rate: {taxData.estimated_county_rate}</p>
+          <p>
+            Your estimated combined rate: {taxData.estimated_combined_rate}
+          </p>{" "}
+        </span>
+      ) : (
+        "... loading"
+      )}
     </div>
   );
 }
